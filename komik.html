@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detail Komik — KomikZone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d12;--surface:#16161f;--card:#1c1c28;--border:#2e2e42;
+  --accent:#8b7cf8;--accent2:#d460f5;--text:#eeeef5;--muted:#8080a8;
+  --green:#4ade80;--radius:14px;--font:'Plus Jakarta Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;-webkit-font-smoothing:antialiased}
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(13,13,18,.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:0 16px;height:58px;
+  display:flex;align-items:center;gap:12px;
+}
+.logo{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;flex-shrink:0}
+.nav-center{flex:1;min-width:0}
+.nav-title{font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back-btn{background:var(--surface);border:1.5px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:.2s;flex-shrink:0}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.detail-wrap{max-width:900px;margin:0 auto;padding:28px 16px}
+.detail-hero{display:flex;gap:20px;margin-bottom:28px}
+.cover-wrap{flex-shrink:0;width:150px}
+@media(max-width:500px){.cover-wrap{width:110px}}
+.cover-wrap img{width:100%;border-radius:12px;display:block;border:2px solid var(--border);aspect-ratio:2/3;object-fit:cover}
+.cover-placeholder{width:100%;aspect-ratio:2/3;background:var(--surface);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:40px;border:2px solid var(--border)}
+.detail-info{flex:1;min-width:0}
+.detail-info h1{font-size:clamp(15px,4vw,24px);font-weight:800;line-height:1.3;margin-bottom:10px}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.badge{background:rgba(139,124,248,.12);border:1px solid rgba(139,124,248,.3);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px}
+.badge.type{background:rgba(212,96,245,.12);border-color:rgba(212,96,245,.3);color:var(--accent2)}
+.rating{font-size:13px;font-weight:700;color:#fbbf24;margin-bottom:8px}
+.info-grid{display:flex;flex-direction:column;gap:5px}
+.info-row{font-size:12px;color:var(--muted);font-weight:500;line-height:1.5}
+.info-row span{color:var(--text);font-weight:600}
+
+.source-link{
+  display:inline-flex;align-items:center;gap:5px;margin-top:10px;
+  color:var(--muted);font-size:11px;font-weight:600;text-decoration:none;
+  border:1px solid var(--border);padding:3px 10px;border-radius:999px;
+  transition:.15s;
+}
+.source-link:hover{color:var(--accent);border-color:var(--accent)}
+
+.section-title{font-size:13px;font-weight:800;margin-bottom:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.synopsis-section{margin-bottom:22px}
+.synopsis-text{font-size:14px;line-height:1.8;color:var(--text);opacity:.85;max-height:120px;overflow:hidden;position:relative;transition:max-height .3s}
+.synopsis-text.expanded{max-height:none}
+.synopsis-text::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(transparent,var(--bg));pointer-events:none;transition:opacity .3s}
+.synopsis-text.expanded::after{opacity:0}
+.read-more-btn{margin-top:6px;font-size:12px;color:var(--accent);cursor:pointer;font-weight:700;background:none;border:none;font-family:var(--font);padding:0}
+
+.genres-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px}
+.genre-tag{background:var(--surface);border:1.5px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:4px 12px;border-radius:999px;text-decoration:none;transition:.15s}
+.genre-tag:hover{border-color:var(--accent);color:var(--accent)}
+
+.chapter-section{margin-top:8px}
+.ch-controls{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.ch-btn{background:var(--surface);border:1.5px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:.15s}
+.ch-btn.active,.ch-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(139,124,248,.08)}
+.ch-count{font-size:12px;color:var(--muted);font-weight:600;margin-left:auto}
+
+.ch-search{
+  width:100%;background:var(--surface);border:1.5px solid var(--border);
+  color:var(--text);padding:8px 14px;border-radius:999px;
+  font-size:13px;font-weight:500;outline:none;font-family:var(--font);
+  transition:border-color .2s;margin-bottom:12px;
+}
+.ch-search:focus{border-color:var(--accent)}
+.ch-search::placeholder{color:var(--muted)}
+
+.ch-list{display:flex;flex-direction:column;gap:6px;max-height:460px;overflow-y:auto;padding-right:4px}
+.ch-list::-webkit-scrollbar{width:4px}
+.ch-list::-webkit-scrollbar-track{background:var(--surface)}
+.ch-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.ch-item{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);border:1.5px solid var(--border);
+  padding:10px 14px;border-radius:10px;text-decoration:none;color:var(--text);
+  transition:.15s;font-size:13px;font-weight:600;
+}
+.ch-item:hover{border-color:var(--accent);background:rgba(139,124,248,.07)}
+.ch-item .ch-arrow{color:var(--muted);font-size:16px}
+.read-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-weight:700;font-size:14px;
+  padding:12px 24px;border-radius:999px;text-decoration:none;
+  margin-bottom:20px;transition:opacity .2s;
+}
+.read-btn:hover{opacity:.9}
+
+.sk{background:linear-gradient(90deg,var(--surface) 25%,rgba(46,46,66,.6) 50%,var(--surface) 75%);background-size:200% 100%;animation:sh 1.5s infinite;border-radius:10px}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk-line{height:16px;margin-bottom:8px}
+.sk-cover{width:150px;aspect-ratio:2/3;border-radius:12px}
+@media(max-width:500px){.sk-cover{width:110px}}
+.err{color:var(--muted);padding:60px 0;text-align:center;font-size:14px;line-height:1.8}
+.err a{color:var(--accent)}
+footer{border-top:1px solid var(--border);text-align:center;padding:22px 16px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">KomikZone</a>
+  <div class="nav-center">
+    <div class="nav-title" id="navTitle">Memuat detail...</div>
+  </div>
+  <a href="index.html" class="back-btn">← Beranda</a>
+</nav>
+
+<div class="detail-wrap" id="app">
+  <div style="display:flex;gap:20px;margin-bottom:28px">
+    <div class="sk sk-cover"></div>
+    <div style="flex:1">
+      <div class="sk sk-line" style="width:70%;height:22px;margin-bottom:14px"></div>
+      <div class="sk sk-line" style="width:45%"></div>
+      <div class="sk sk-line" style="width:55%"></div>
+      <div class="sk sk-line" style="width:60%"></div>
+      <div class="sk sk-line" style="width:40%"></div>
+    </div>
+  </div>
+  <div class="sk sk-line"></div>
+  <div class="sk sk-line"></div>
+  <div class="sk sk-line" style="width:80%"></div>
+</div>
+
+<footer><p>KomikZone &mdash; Baca Manga & Manhwa Gratis</p></footer>
+
+<script>
+const params = new URLSearchParams(location.search);
+const komikUrl = params.get("url") || "";
+const komikTitle = params.get("title") || "Komik";
+
+document.title = komikTitle + " — KomikZone";
+document.getElementById("navTitle").textContent = komikTitle;
+
+let allChapters = [];
+let sortAsc = false;
+let chFilter = "";
+
+async function loadDetail() {
+  if (!komikUrl) { showErr("URL tidak valid."); return; }
+  try {
+    const r = await fetch(`/api/detail?url=${encodeURIComponent(komikUrl)}`);
+    const j = await r.json();
+    if (!j.ok) {
+      showErr(`${j.error || "Gagal memuat data."}<br><br><a href="${komikUrl}" target="_blank">Buka di sumber →</a>`);
+      return;
+    }
+    render(j.data);
+  } catch(e) {
+    showErr(`Koneksi gagal: ${e.message}<br><br><a href="${komikUrl}" target="_blank">Buka di sumber →</a>`);
+  }
+}
+
+function render(d) {
+  allChapters = d.chapters || [];
+  const title = d.title || komikTitle;
+  document.title = title + " — KomikZone";
+  document.getElementById("navTitle").textContent = title;
+
+  const coverHTML = d.thumbnail
+    ? `<img src="${d.thumbnail}" alt="${title}" onerror="this.outerHTML='<div class=cover-placeholder>📖</div>'">`
+    : `<div class="cover-placeholder">📖</div>`;
+
+  // Info entries — filter yang relevan saja
+  const allowedKeys = ["Pengarang","Author","Mangaka","Status","Type","Tipe","Tahun","Year","Serialization","Magazine"];
+  const infoEntries = Object.entries(d.info || {})
+    .filter(([k]) => allowedKeys.some(a => k.toLowerCase().includes(a.toLowerCase())))
+    .slice(0, 6)
+    .map(([k,v]) => `<div class="info-row">${k}: <span>${v}</span></div>`).join("");
+
+  const genresHTML = (d.genres||[]).filter(g => g && g.length > 1).map(g =>
+    `<a class="genre-tag" href="genre.html?slug=${encodeURIComponent(g.toLowerCase().replace(/\s+/g,'-'))}&name=${encodeURIComponent(g)}">${g}</a>`
+  ).join("");
+
+  // Tombol baca chapter pertama (Ch.1) dan terbaru
+  const firstCh = allChapters[0];
+  const lastCh = allChapters[allChapters.length - 1];
+  
+  const makeReadUrl = (ch) => ch
+    ? `read.html?url=${encodeURIComponent(ch.url)}&title=${encodeURIComponent(ch.label)}&komikUrl=${encodeURIComponent(komikUrl)}&komikTitle=${encodeURIComponent(title)}`
+    : "#";
+
+  document.getElementById("app").innerHTML = `
+    <div class="detail-hero">
+      <div class="cover-wrap">${coverHTML}</div>
+      <div class="detail-info">
+        <h1>${title}</h1>
+        <div class="badges">
+          ${d.info?.Type || d.info?.Tipe ? `<span class="badge type">${d.info.Type||d.info.Tipe}</span>` : ""}
+          ${d.info?.Status ? `<span class="badge">${d.info.Status}</span>` : ""}
+          ${allChapters.length ? `<span class="badge">${allChapters.length} Chapter</span>` : ""}
+        </div>
+        ${d.rating && d.rating !== "-" ? `<div class="rating">★ ${d.rating}</div>` : ""}
+        <div class="info-grid">${infoEntries}</div>
+        <a class="source-link" href="${komikUrl}" target="_blank">🔗 Buka di sumber</a>
+      </div>
+    </div>
+
+    ${d.synopsis && d.synopsis !== "-" ? `
+    <div class="synopsis-section">
+      <div class="section-title">Sinopsis</div>
+      <div class="synopsis-text" id="synText">${d.synopsis}</div>
+      <button class="read-more-btn" id="readMoreBtn" onclick="toggleSynopsis()">Baca selengkapnya ▾</button>
+    </div>` : ""}
+
+    ${genresHTML ? `<div class="genres-wrap">${genresHTML}</div>` : ""}
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+      ${firstCh ? `<a class="read-btn" href="${makeReadUrl(firstCh)}" style="background:var(--surface);border:1.5px solid var(--border);color:var(--text)">📖 Ch.1</a>` : ""}
+      ${lastCh ? `<a class="read-btn" href="${makeReadUrl(lastCh)}">📖 Chapter Terbaru</a>` : ""}
+    </div>
+
+    <div class="chapter-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title" style="margin:0">Daftar Chapter</div>
+        <span class="ch-count" id="chCount">${allChapters.length} chapter</span>
+      </div>
+      <input class="ch-search" id="chSearchInput" placeholder="Filter chapter (contoh: 50)" oninput="filterChapters(this.value)">
+      <div class="ch-controls">
+        <button class="ch-btn active" onclick="setSort(false,this)">Terbaru Dulu</button>
+        <button class="ch-btn" onclick="setSort(true,this)">Terlama Dulu</button>
+      </div>
+      <div class="ch-list" id="chList"></div>
+    </div>
+  `;
+  renderChapters();
+
+  // Cek apakah synopsis cukup panjang untuk tombol
+  const synText = document.getElementById("synText");
+  const readMoreBtn = document.getElementById("readMoreBtn");
+  if (synText && readMoreBtn) {
+    if (synText.scrollHeight <= 125) readMoreBtn.style.display = "none";
+  }
+}
+
+function toggleSynopsis() {
+  const el = document.getElementById("synText");
+  const btn = document.getElementById("readMoreBtn");
+  if (el.classList.toggle("expanded")) {
+    btn.textContent = "Sembunyikan ▴";
+  } else {
+    btn.textContent = "Baca selengkapnya ▾";
+  }
+}
+
+function setSort(asc, btn) {
+  sortAsc = asc;
+  document.querySelectorAll(".ch-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderChapters();
+}
+
+function filterChapters(val) {
+  chFilter = val.trim().toLowerCase();
+  renderChapters();
+}
+
+function renderChapters() {
+  const title = params.get("title") || "Komik";
+  let list = [...allChapters];
+  
+  // Filter
+  if (chFilter) {
+    list = list.filter(ch =>
+      ch.label.toLowerCase().includes(chFilter) ||
+      String(ch.chNum).includes(chFilter)
+    );
+  }
+  
+  // Sort
+  list.sort((a,b) => sortAsc ? a.chNum-b.chNum : b.chNum-a.chNum);
+  
+  // Update count
+  const countEl = document.getElementById("chCount");
+  if (countEl) countEl.textContent = chFilter ? `${list.length} dari ${allChapters.length}` : `${allChapters.length} chapter`;
+  
+  const el = document.getElementById("chList");
+  if (!el) return;
+  
+  if (!list.length) {
+    el.innerHTML = `<p style="color:var(--muted);padding:20px 0;text-align:center;font-size:13px">Tidak ada chapter${chFilter ? ` dengan kata "${chFilter}"` : ""}.</p>`;
+    return;
+  }
+  
+  el.innerHTML = list.map(ch => {
+    const href = `read.html?url=${encodeURIComponent(ch.url)}&title=${encodeURIComponent(ch.label)}&komikUrl=${encodeURIComponent(komikUrl)}&komikTitle=${encodeURIComponent(title)}`;
+    return `<a class="ch-item" href="${href}">
+      <span>${ch.label}</span>
+      <span class="ch-arrow">→</span>
+    </a>`;
+  }).join("");
+}
+
+function showErr(msg) {
+  document.getElementById("app").innerHTML = `<div class="err">⚠️ ${msg || "Gagal memuat data."}</div>`;
+}
+
+loadDetail();
+</script>
+</body>
+</html>

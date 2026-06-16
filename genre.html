@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genre — KomikZone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d12;--surface:#16161f;--card:#1c1c28;--border:#2e2e42;
+  --accent:#8b7cf8;--accent2:#d460f5;--text:#eeeef5;--muted:#8080a8;
+  --radius:14px;--font:'Plus Jakarta Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;-webkit-font-smoothing:antialiased}
+nav{position:sticky;top:0;z-index:100;background:rgba(13,13,18,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 16px;height:58px;display:flex;align-items:center;gap:12px}
+.logo{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+.back-btn{background:var(--surface);border:1.5px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none;transition:.2s}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.wrap{max-width:1200px;margin:0 auto;padding:28px 16px 60px}
+.page-title{font-size:24px;font-weight:800;margin-bottom:6px}
+.page-title span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-sub{color:var(--muted);font-size:14px;font-weight:500;margin-bottom:24px}
+
+/* Genre list mode */
+.genre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:32px}
+.genre-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;text-decoration:none;color:var(--text);transition:.2s;display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px}
+.genre-card:hover,.genre-card.active{border-color:var(--accent);color:var(--accent);background:rgba(139,124,248,.07)}
+.genre-icon{font-size:18px}
+
+/* Komik grid */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-header h2{font-size:18px;font-weight:800}
+.section-header h2 em{font-style:normal;color:var(--accent)}
+.src-tabs{display:flex;gap:8px;margin-bottom:16px}
+.src-tab{background:var(--surface);border:1.5px solid var(--border);color:var(--muted);padding:6px 16px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);transition:.15s}
+.src-tab.active,.src-tab:hover{border-color:var(--accent);color:var(--accent);background:rgba(139,124,248,.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+@media(max-width:500px){.grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:9px}}
+.card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border);text-decoration:none;color:inherit;display:block;transition:.2s}
+.card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 28px rgba(139,124,248,.18)}
+.card-thumb{position:relative;aspect-ratio:2/3;overflow:hidden;background:var(--surface)}
+.card-thumb img{width:100%;height:100%;object-fit:cover;transition:.35s;display:block}
+.card:hover .card-thumb img{transform:scale(1.06)}
+.ch-badge{position:absolute;bottom:7px;left:7px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:7px}
+.type-badge{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.72);color:rgba(255,255,255,.7);font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;text-transform:uppercase}
+.card-info{padding:9px 10px 10px}
+.card-info h3{font-size:12.5px;font-weight:700;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-meta{margin-top:4px;font-size:11px;color:var(--muted);font-weight:600}
+.no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--surface);color:var(--muted);font-size:28px}
+
+.load-more{display:block;width:fit-content;margin:24px auto 0;background:var(--surface);border:1.5px solid var(--border);color:var(--muted);padding:10px 28px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:.2s}
+.load-more:hover{border-color:var(--accent);color:var(--accent)}
+.load-more:disabled{opacity:.4;pointer-events:none}
+
+.sk{background:linear-gradient(90deg,var(--surface) 25%,rgba(46,46,66,.6) 50%,var(--surface) 75%);background-size:200% 100%;animation:sh 1.5s infinite;border-radius:var(--radius)}
+.sk-card{aspect-ratio:2/3}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+footer{border-top:1px solid var(--border);text-align:center;padding:22px 16px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">KomikZone</a>
+  <a href="index.html" class="back-btn">← Home</a>
+</nav>
+
+<div class="wrap">
+  <div id="genreListSection">
+    <div class="page-title">Semua <span>Genre</span></div>
+    <div class="page-sub">Pilih genre untuk menjelajahi komik</div>
+    <div class="genre-grid" id="genreGrid">
+      ${Array(18).fill('<div class="sk" style="height:52px;border-radius:14px"></div>').join('')}
+    </div>
+  </div>
+
+  <div id="genreResultSection" style="display:none">
+    <div class="section-header">
+      <h2>Genre: <em id="genreTitle">—</em></h2>
+      <a href="genre.html" style="font-size:13px;color:var(--muted);text-decoration:none;font-weight:600" onclick="clearGenre();return false">✕ Semua Genre</a>
+    </div>
+    <div class="src-tabs">
+      <button class="src-tab active" onclick="switchSrc('komiku',this)">Komiku</button>
+      <button class="src-tab" onclick="switchSrc('manhwaland',this)">ManhwaLand</button>
+    </div>
+    <div class="grid" id="genreGrid2"></div>
+    <button class="load-more" id="loadMoreBtn" onclick="loadMore()" style="display:none">Muat Lebih Banyak</button>
+  </div>
+</div>
+
+<footer><p>KomikZone &mdash; Baca Manga & Manhwa Gratis</p></footer>
+
+<script>
+const GENRE_ICONS = {
+  Action:"⚔️",Adventure:"🗺️",Comedy:"😄",Drama:"🎭",Fantasy:"🧙",
+  Horror:"👻",Isekai:"🌀",Magic:"✨",Martial:"🥋","Martial Arts":"🥋",
+  Mecha:"🤖",Mystery:"🔍",Psychological:"🧠",Romance:"💕",School:"🎓",
+  "Sci-Fi":"🚀",Seinen:"📘",Shoujo:"🌸",Shounen:"⚡","Slice of Life":"☕",
+  Sports:"⚽",Supernatural:"👁️",Thriller:"😰",Webtoon:"📱",
+};
+
+const params = new URLSearchParams(location.search);
+let currentSlug = params.get("slug") || "";
+let currentName = params.get("name") || "";
+let currentSrc  = "komiku";
+let currentPage = 1;
+let hasNextPage = false;
+
+async function loadGenreList() {
+  try {
+    const r = await fetch("/api/genre");
+    const j = await r.json();
+    if (!j.ok) return;
+    document.getElementById("genreGrid").innerHTML = j.genres.map(g => {
+      const icon = GENRE_ICONS[g.name] || "📚";
+      return `<a class="genre-card${currentSlug===g.slug?' active':''}" href="genre.html?slug=${g.slug}&name=${encodeURIComponent(g.name)}" onclick="openGenre('${g.slug}','${g.name}');return false">${icon} ${g.name}</a>`;
+    }).join("");
+  } catch(e){}
+}
+
+function openGenre(slug, name) {
+  currentSlug = slug;
+  currentName = name;
+  currentPage = 1;
+  history.replaceState(null,"",`genre.html?slug=${slug}&name=${encodeURIComponent(name)}`);
+  document.getElementById("genreListSection").style.display = "none";
+  document.getElementById("genreResultSection").style.display = "";
+  document.getElementById("genreTitle").textContent = name;
+  document.getElementById("genreGrid2").innerHTML = Array(12).fill('<div class="sk sk-card"></div>').join("");
+  document.getElementById("loadMoreBtn").style.display = "none";
+  fetchGenreItems(true);
+}
+
+function clearGenre() {
+  currentSlug = "";
+  history.replaceState(null,"","genre.html");
+  document.getElementById("genreListSection").style.display = "";
+  document.getElementById("genreResultSection").style.display = "none";
+}
+
+function switchSrc(src, btn) {
+  currentSrc = src;
+  currentPage = 1;
+  document.querySelectorAll(".src-tab").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("genreGrid2").innerHTML = Array(12).fill('<div class="sk sk-card"></div>').join("");
+  document.getElementById("loadMoreBtn").style.display = "none";
+  fetchGenreItems(true);
+}
+
+async function fetchGenreItems(reset = false) {
+  try {
+    const r = await fetch(`/api/genre?slug=${currentSlug}&src=${currentSrc}&page=${currentPage}`);
+    const j = await r.json();
+    if (!j.ok) { document.getElementById("genreGrid2").innerHTML = `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">Gagal memuat.</p>`; return; }
+    hasNextPage = j.hasNext;
+    const html = (j.data||[]).map(item => {
+      const thumb = item.thumbnail
+        ? `<img src="${item.thumbnail}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=no-img>📖</div>'">`
+        : `<div class="no-img">📖</div>`;
+      const chBadge = item.chapter ? `<span class="ch-badge">Ch.${item.chapter}</span>` : "";
+      const typeBadge = item.type ? `<span class="type-badge">${item.type}</span>` : "";
+      const href = `komik.html?url=${encodeURIComponent(item.url)}&title=${encodeURIComponent(item.judul)}`;
+      return `<a class="card" href="${href}">
+        <div class="card-thumb">${thumb}${chBadge}${typeBadge}</div>
+        <div class="card-info"><h3>${item.judul}</h3><div class="card-meta">${item.type||""}</div></div>
+      </a>`;
+    }).join("") || `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">Tidak ada komik di genre ini.</p>`;
+
+    if (reset) {
+      document.getElementById("genreGrid2").innerHTML = html;
+    } else {
+      document.getElementById("genreGrid2").insertAdjacentHTML("beforeend", html);
+    }
+    const btn = document.getElementById("loadMoreBtn");
+    btn.style.display = hasNextPage ? "block" : "none";
+    btn.disabled = false;
+  } catch(e) {
+    document.getElementById("genreGrid2").innerHTML = `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">Error: ${e.message}</p>`;
+  }
+}
+
+function loadMore() {
+  currentPage++;
+  document.getElementById("loadMoreBtn").disabled = true;
+  fetchGenreItems(false);
+}
+
+// Init
+loadGenreList();
+if (currentSlug) {
+  openGenre(currentSlug, currentName || currentSlug);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/api/latest", "destination": "/api/latest.js" },
+    { "source": "/api/detail", "destination": "/api/detail.js" },
+    { "source": "/api/chapter", "destination": "/api/chapter.js" },
+    { "source": "/api/genre", "destination": "/api/genre.js" },
+    { "source": "/api/search", "destination": "/api/search.js" }
+  ]
+}
