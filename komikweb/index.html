@@ -241,16 +241,31 @@ async function loadLatest() {
   try {
     const r = await fetch("/api/latest");
     const j = await r.json();
-    if (j.ok && j.data.length > 0) {
+    if (j.ok && j.data && j.data.length > 0) {
       allItems = j.data;
       renderLatest();
+      // Tampilkan warning jika salah satu sumber gagal tapi ada partial data
+      if (j.warnings && j.warnings.length > 0) {
+        console.warn("Partial load warnings:", j.warnings);
+      }
     } else {
-      document.getElementById("latestGrid").innerHTML =
-        `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">Gagal memuat. Coba refresh.</p>`;
+      const errMsg = j.error || "Tidak ada data";
+      document.getElementById("latestGrid").innerHTML = `
+        <div style="grid-column:1/-1;padding:30px 0;text-align:center;color:var(--muted)">
+          <div style="font-size:32px;margin-bottom:12px">⚠️</div>
+          <p style="font-weight:600;margin-bottom:6px">Gagal memuat semua sumber</p>
+          <p style="font-size:12px;opacity:.7;margin-bottom:16px">${errMsg}</p>
+          <button onclick="loadLatest()" style="background:var(--accent);border:none;color:#fff;padding:9px 22px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--font)">🔄 Coba Lagi</button>
+        </div>`;
     }
   } catch(e) {
-    document.getElementById("latestGrid").innerHTML =
-      `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">Error: ${e.message}</p>`;
+    document.getElementById("latestGrid").innerHTML = `
+      <div style="grid-column:1/-1;padding:30px 0;text-align:center;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:12px">⚠️</div>
+        <p style="font-weight:600;margin-bottom:6px">Koneksi gagal</p>
+        <p style="font-size:12px;opacity:.7;margin-bottom:16px">${e.message}</p>
+        <button onclick="loadLatest()" style="background:var(--accent);border:none;color:#fff;padding:9px 22px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--font)">🔄 Coba Lagi</button>
+      </div>`;
   }
 }
 
