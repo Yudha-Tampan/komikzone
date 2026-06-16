@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baca Komik — KomikZone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0e;--surface:#16161f;--card:#1c1c28;--border:#2e2e42;
+  --accent:#8b7cf8;--accent2:#d460f5;--text:#eeeef5;--muted:#8080a8;
+  --radius:12px;--font:'Plus Jakarta Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,14,.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:0 16px;height:54px;
+  display:flex;align-items:center;gap:10px;
+}
+.logo{font-size:18px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;flex-shrink:0}
+.nav-title{font-size:13px;font-weight:600;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-link{background:var(--surface);border:1.5px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;transition:.2s;flex-shrink:0}
+.nav-link:hover{border-color:var(--accent);color:var(--accent)}
+
+/* CHAPTER NAV BAR */
+.ch-nav{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  position:sticky;top:54px;z-index:99;
+}
+.ch-nav-btn{
+  background:var(--card);border:1.5px solid var(--border);color:var(--text);
+  padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;
+  text-decoration:none;cursor:pointer;white-space:nowrap;transition:.2s;flex-shrink:0;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.ch-nav-btn:hover:not(.disabled){border-color:var(--accent);color:var(--accent)}
+.ch-nav-btn.disabled{opacity:.3;pointer-events:none}
+.ch-nav-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#fff}
+.ch-info{font-size:12px;font-weight:700;color:var(--muted);text-align:center;white-space:nowrap}
+
+/* READER */
+.reader{max-width:800px;margin:0 auto;padding:16px}
+.page-img{
+  width:100%;display:block;margin-bottom:2px;
+  border-radius:4px;image-rendering:auto;
+}
+.page-img:last-child{margin-bottom:0}
+.img-wrapper{position:relative;background:var(--surface);margin-bottom:2px;border-radius:4px;overflow:hidden;min-height:200px}
+.img-wrapper img{width:100%;display:block}
+.img-err{display:flex;align-items:center;justify-content:center;min-height:200px;font-size:13px;color:var(--muted)}
+
+/* LOADING */
+.loading{text-align:center;padding:60px 20px;color:var(--muted)}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  max-width:800px;margin:0 auto;padding:20px 16px 40px;
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+}
+
+.sk{background:linear-gradient(90deg,var(--surface) 25%,rgba(46,46,66,.6) 50%,var(--surface) 75%);background-size:200% 100%;animation:sh 1.5s infinite}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* PROGRESS BAR */
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:999;transition:width .1s;width:0}
+
+/* PAGE COUNTER */
+.page-counter{text-align:center;padding:14px;font-size:13px;color:var(--muted);font-weight:600}
+
+footer{border-top:1px solid var(--border);text-align:center;padding:22px 16px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav>
+  <a href="index.html" class="logo">KomikZone</a>
+  <div class="nav-title" id="navTitle">Memuat...</div>
+  <a href="#" id="backToKomik" class="nav-link">📚 Detail</a>
+</nav>
+
+<div class="ch-nav">
+  <a href="#" class="ch-nav-btn disabled" id="prevBtn">← Prev</a>
+  <div class="ch-info" id="chInfo">—</div>
+  <a href="#" class="ch-nav-btn disabled" id="nextBtn">Next →</a>
+</div>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <p>Memuat chapter...</p>
+</div>
+
+<div class="reader" id="reader" style="display:none"></div>
+
+<div class="page-counter" id="pageCounter" style="display:none"></div>
+
+<div class="bottom-nav" id="bottomNav" style="display:none">
+  <a href="#" class="ch-nav-btn disabled" id="prevBtn2">← Chapter Sebelumnya</a>
+  <a href="#" class="ch-nav-btn primary" onclick="window.scrollTo({top:0,behavior:'smooth'});return false">↑ Ke Atas</a>
+  <a href="#" class="ch-nav-btn disabled" id="nextBtn2">Chapter Selanjutnya →</a>
+</div>
+
+<footer><p>KomikZone &mdash; Baca Manga & Manhwa Gratis</p></footer>
+
+<script>
+const params = new URLSearchParams(location.search);
+const chapterUrl = params.get("url") || "";
+const chapterTitle = params.get("title") || "Chapter";
+const komikUrl = params.get("komikUrl") || "";
+const komikTitle = params.get("komikTitle") || "Komik";
+
+document.title = chapterTitle + " — KomikZone";
+document.getElementById("navTitle").textContent = chapterTitle;
+
+// Back to detail page
+const backLink = document.getElementById("backToKomik");
+if (komikUrl) {
+  backLink.href = `komik.html?url=${encodeURIComponent(komikUrl)}&title=${encodeURIComponent(komikTitle)}`;
+} else {
+  backLink.style.display = "none";
+}
+
+async function loadChapter() {
+  if (!chapterUrl) { showErr("URL chapter tidak valid."); return; }
+  try {
+    const r = await fetch(`/api/chapter?url=${encodeURIComponent(chapterUrl)}`);
+    const j = await r.json();
+    if (!j.ok) { showErr(j.error); return; }
+    render(j.data);
+  } catch(e) {
+    showErr(e.message);
+  }
+}
+
+function render(d) {
+  document.getElementById("loading").style.display = "none";
+
+  // Update nav title
+  if (d.title) {
+    document.title = d.title + " — KomikZone";
+    document.getElementById("navTitle").textContent = d.title;
+  }
+
+  // Chapter info
+  document.getElementById("chInfo").textContent = d.title || chapterTitle;
+
+  // Prev/Next buttons
+  function setNavBtn(id, url, label) {
+    const btn = document.getElementById(id);
+    if (url) {
+      btn.href = `read.html?url=${encodeURIComponent(url)}&title=${encodeURIComponent(label)}&komikUrl=${encodeURIComponent(komikUrl)}&komikTitle=${encodeURIComponent(komikTitle)}`;
+      btn.classList.remove("disabled");
+    }
+  }
+  setNavBtn("prevBtn", d.prevChapter, "Chapter Sebelumnya");
+  setNavBtn("nextBtn", d.nextChapter, "Chapter Selanjutnya");
+  setNavBtn("prevBtn2", d.prevChapter, "Chapter Sebelumnya");
+  setNavBtn("nextBtn2", d.nextChapter, "Chapter Selanjutnya");
+
+  // Images
+  const reader = document.getElementById("reader");
+  if (!d.images || d.images.length === 0) {
+    reader.innerHTML = `<p style="text-align:center;color:var(--muted);padding:60px 0">Gambar tidak ditemukan. Mungkin situs menggunakan proteksi anti-bot.<br><br><a href="${chapterUrl}" target="_blank" style="color:var(--accent)">Buka langsung di sumber →</a></p>`;
+    reader.style.display = "";
+    return;
+  }
+
+  reader.innerHTML = d.images.map((src, i) =>
+    `<div class="img-wrapper">
+      <img src="${src}" alt="Halaman ${i+1}" loading="${i < 3 ? 'eager' : 'lazy'}"
+        onerror="this.outerHTML='<div class=img-err>⚠️ Gambar ${i+1} gagal dimuat</div>'">
+    </div>`
+  ).join("");
+
+  reader.style.display = "";
+  document.getElementById("pageCounter").textContent = `${d.images.length} halaman`;
+  document.getElementById("pageCounter").style.display = "block";
+  document.getElementById("bottomNav").style.display = "flex";
+
+  // Progress bar on scroll
+  window.addEventListener("scroll", () => {
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = total > 0 ? (window.scrollY / total) * 100 : 0;
+    document.getElementById("progressBar").style.width = pct + "%";
+  });
+}
+
+function showErr(msg) {
+  document.getElementById("loading").innerHTML =
+    `<p style="color:var(--muted)">⚠️ ${msg || "Gagal memuat chapter."}<br><br>
+    <a href="${chapterUrl}" target="_blank" style="color:var(--accent)">Buka langsung di sumber →</a></p>`;
+}
+
+loadChapter();
+</script>
+</body>
+</html>

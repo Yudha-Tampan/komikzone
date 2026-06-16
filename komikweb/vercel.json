@@ -1,0 +1,9 @@
+{
+  "routes": [
+    { "src": "/api/latest",  "dest": "/api/latest.js" },
+    { "src": "/api/detail",  "dest": "/api/detail.js" },
+    { "src": "/api/search",  "dest": "/api/search.js" },
+    { "src": "/api/genre",   "dest": "/api/genre.js" },
+    { "src": "/api/chapter", "dest": "/api/chapter.js" }
+  ]
+}

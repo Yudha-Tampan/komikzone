@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KomikZone — Baca Komik Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d12;--surface:#16161f;--card:#1c1c28;--border:#2e2e42;
+  --accent:#8b7cf8;--accent2:#d460f5;--text:#eeeef5;--muted:#8080a8;
+  --green:#4ade80;--red:#f87171;--radius:14px;
+  --font:'Plus Jakarta Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(13,13,18,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 16px;height:58px;
+  display:flex;align-items:center;gap:10px;
+}
+.logo{
+  font-size:20px;font-weight:800;letter-spacing:-.5px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-decoration:none;flex-shrink:0;
+}
+.nav-right{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end}
+.search-wrap{position:relative;flex:1;max-width:300px}
+.search-wrap input{
+  width:100%;background:var(--surface);border:1.5px solid var(--border);
+  color:var(--text);padding:9px 14px 9px 38px;border-radius:999px;
+  font-size:14px;font-weight:500;outline:none;font-family:var(--font);
+  transition:border-color .2s;
+}
+.search-wrap input:focus{border-color:var(--accent)}
+.search-wrap input::placeholder{color:var(--muted)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.nav-btn{
+  background:var(--surface);border:1.5px solid var(--border);color:var(--muted);
+  padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;
+  cursor:pointer;text-decoration:none;white-space:nowrap;
+  transition:border-color .2s,color .2s;font-family:var(--font);
+}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.hero{
+  padding:44px 16px 28px;text-align:center;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(139,124,248,.13) 0%,transparent 70%);
+}
+.hero h1{font-size:clamp(26px,6vw,48px);font-weight:800;line-height:1.15;letter-spacing:-.5px;margin-bottom:8px}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:15px;font-weight:500}
+
+.sources{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;padding:12px 16px 0}
+.src-badge{
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--muted);font-size:11px;font-weight:600;
+  padding:3px 10px;border-radius:999px;
+}
+
+.genre-bar{
+  max-width:1200px;margin:20px auto 0;padding:0 16px;
+  display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;
+}
+.genre-bar::-webkit-scrollbar{display:none}
+.genre-pill{
+  background:var(--surface);border:1.5px solid var(--border);color:var(--muted);
+  padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+  cursor:pointer;white-space:nowrap;text-decoration:none;flex-shrink:0;
+  transition:all .15s;
+}
+.genre-pill:hover,.genre-pill.active{border-color:var(--accent);color:var(--accent);background:rgba(139,124,248,.07)}
+
+.section-header{
+  max-width:1200px;margin:0 auto;padding:22px 16px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.section-header h2{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.section-header h2 em{font-style:normal;color:var(--accent)}
+.section-header a{font-size:13px;color:var(--muted);text-decoration:none;font-weight:600}
+.section-header a:hover{color:var(--accent)}
+
+.grid{
+  max-width:1200px;margin:0 auto;padding:0 16px 40px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;
+}
+@media(max-width:500px){.grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:9px}}
+
+.card{
+  background:var(--card);border-radius:var(--radius);overflow:hidden;
+  border:1.5px solid var(--border);text-decoration:none;color:inherit;display:block;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 28px rgba(139,124,248,.18)}
+.card-thumb{position:relative;aspect-ratio:2/3;overflow:hidden;background:var(--surface)}
+.card-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .35s;display:block}
+.card:hover .card-thumb img{transform:scale(1.06)}
+.ch-badge{
+  position:absolute;bottom:7px;left:7px;
+  background:var(--accent);color:#fff;font-size:10px;font-weight:700;
+  padding:3px 8px;border-radius:7px;letter-spacing:.02em;
+}
+.type-badge{
+  position:absolute;top:7px;right:7px;
+  background:rgba(0,0,0,.72);color:rgba(255,255,255,.7);font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:5px;text-transform:uppercase;
+}
+.src-tag{
+  position:absolute;top:7px;left:7px;
+  background:rgba(139,124,248,.85);color:#fff;font-size:9px;font-weight:700;
+  padding:2px 6px;border-radius:5px;
+}
+.card-info{padding:9px 10px 10px}
+.card-info h3{
+  font-size:12.5px;font-weight:700;line-height:1.45;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.card-meta{margin-top:4px;font-size:11px;font-weight:600;color:var(--muted)}
+
+.filter-bar{
+  max-width:1200px;margin:0 auto;padding:0 16px 12px;
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+}
+.filter-btn{
+  background:var(--surface);border:1.5px solid var(--border);color:var(--muted);
+  padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;
+  cursor:pointer;font-family:var(--font);transition:all .15s;
+}
+.filter-btn.active,.filter-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(139,124,248,.08)}
+
+.sk{
+  background:linear-gradient(90deg,var(--surface) 25%,rgba(46,46,66,.6) 50%,var(--surface) 75%);
+  background-size:200% 100%;animation:sh 1.5s infinite;border-radius:var(--radius);
+}
+.sk-card{aspect-ratio:2/3}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  background:var(--surface);color:var(--muted);font-size:28px}
+
+footer{border-top:1px solid var(--border);text-align:center;padding:22px 16px;
+  color:var(--muted);font-size:13px;font-weight:500}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">KomikZone</a>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Cari komik..." autocomplete="off">
+    </div>
+    <a href="genre.html" class="nav-btn">Genre</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Baca Komik<br><span>Manga & Manhwa</span></h1>
+  <p>2 sumber — update setiap hari</p>
+</div>
+
+<div class="sources">
+  <span class="src-badge">Komiku</span>
+  <span class="src-badge">ManhwaLand</span>
+</div>
+
+<div class="genre-bar" id="genreBar"></div>
+
+<!-- Search -->
+<div id="searchSection" style="display:none">
+  <div class="section-header">
+    <h2>Hasil <em id="searchLabel">Pencarian</em></h2>
+    <a href="#" onclick="clearSearch();return false">✕ Tutup</a>
+  </div>
+  <div class="grid" id="searchGrid"></div>
+</div>
+
+<!-- Latest -->
+<div id="latestSection">
+  <div class="section-header">
+    <h2>Chapter <em>Terbaru</em></h2>
+    <a href="genre.html">Semua Genre →</a>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterSource('all',this)">Semua</button>
+    <button class="filter-btn" onclick="filterSource('Komiku',this)">Komiku</button>
+    <button class="filter-btn" onclick="filterSource('ManhwaLand',this)">ManhwaLand</button>
+  </div>
+
+  <div class="grid" id="latestGrid">
+    ${Array(15).fill('<div class="sk sk-card"></div>').join('')}
+  </div>
+</div>
+
+<footer><p>KomikZone &mdash; Baca Manga & Manhwa Gratis</p></footer>
+
+<script>
+let allItems = [];
+let activeSource = "all";
+
+function cardHTML(item) {
+  const thumb = item.thumbnail
+    ? `<img src="${item.thumbnail}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=no-img>📖</div>'">`
+    : `<div class="no-img">📖</div>`;
+  const chBadge = item.chapter ? `<span class="ch-badge">Ch.${item.chapter}</span>` : "";
+  const typeBadge = item.type ? `<span class="type-badge">${item.type}</span>` : "";
+  const srcTag = item.source ? `<span class="src-tag">${item.source}</span>` : "";
+  const href = `komik.html?url=${encodeURIComponent(item.url)}&title=${encodeURIComponent(item.judul)}`;
+  return `<a class="card" href="${href}">
+    <div class="card-thumb">${thumb}${chBadge}${typeBadge}${srcTag}</div>
+    <div class="card-info"><h3>${item.judul}</h3><div class="card-meta">${item.type || ""}</div></div>
+  </a>`;
+}
+
+function filterSource(src, btn) {
+  activeSource = src;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderLatest();
+}
+
+function renderLatest() {
+  const grid = document.getElementById("latestGrid");
+  const filtered = activeSource === "all" ? allItems : allItems.filter(e => e.source === activeSource);
+  if (!filtered.length) {
+    grid.innerHTML = `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">Tidak ada data.</p>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(cardHTML).join("");
+}
+
+async function loadLatest() {
+  try {
+    const r = await fetch("/api/latest");
+    const j = await r.json();
+    if (j.ok && j.data.length > 0) {
+      allItems = j.data;
+      renderLatest();
+    } else {
+      document.getElementById("latestGrid").innerHTML =
+        `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">Gagal memuat. Coba refresh.</p>`;
+    }
+  } catch(e) {
+    document.getElementById("latestGrid").innerHTML =
+      `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">Error: ${e.message}</p>`;
+  }
+}
+
+async function loadGenrePills() {
+  try {
+    const r = await fetch("/api/genre");
+    const j = await r.json();
+    if (!j.ok) return;
+    document.getElementById("genreBar").innerHTML = j.genres.slice(0,14).map(g =>
+      `<a class="genre-pill" href="genre.html?slug=${g.slug}&name=${encodeURIComponent(g.name)}">${g.name}</a>`
+    ).join("");
+  } catch(e){}
+}
+
+let searchTimer;
+document.getElementById("searchInput").addEventListener("input", function() {
+  clearTimeout(searchTimer);
+  const q = this.value.trim();
+  if (!q) { clearSearch(); return; }
+  searchTimer = setTimeout(() => doSearch(q), 450);
+});
+
+async function doSearch(q) {
+  document.getElementById("searchSection").style.display = "";
+  document.getElementById("latestSection").style.display = "none";
+  document.getElementById("searchLabel").textContent = `"${q}"`;
+  const grid = document.getElementById("searchGrid");
+  grid.innerHTML = Array(8).fill('<div class="sk sk-card"></div>').join("");
+  try {
+    const r = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+    const j = await r.json();
+    if (j.ok && j.data.length > 0) {
+      grid.innerHTML = j.data.map(cardHTML).join("");
+    } else {
+      grid.innerHTML = `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">Tidak ada hasil untuk "${q}".</p>`;
+    }
+  } catch(e) {
+    grid.innerHTML = `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">Error: ${e.message}</p>`;
+  }
+}
+
+function clearSearch() {
+  document.getElementById("searchInput").value = "";
+  document.getElementById("searchSection").style.display = "none";
+  document.getElementById("latestSection").style.display = "";
+}
+
+loadGenrePills();
+loadLatest();
+</script>
+</body>
+</html>
